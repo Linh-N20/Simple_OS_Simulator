@@ -1,6 +1,6 @@
 # Simple Operating System Simulation
 
-![CI](https://github.com/Linh-N20/ossim_caitoa/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/Linh-N20/Simple_OS_Simulator/actions/workflows/ci.yml/badge.svg)
 
 A simulated Operating System built for **CO2018 — Operating Systems** at Ho Chi Minh City University of Technology (HCMUT), implementing three core OS subsystems: **process scheduling**, **memory management (multi-level paging)**, and **synchronization / system calls**, running over simulated multi-CPU hardware.
 
@@ -44,19 +44,22 @@ The project simulates how an operating system coordinates concurrent processes a
 
 ```
 .
-├── include/                    # Header files
+├── include/                # Header files
 │                   
-├── src/                        # Kernel source
+├── src/                    # Kernel source
+|   |
 │   ├── os.c, cpu.c, loader.c, timer.c, queue.c
-│   ├── sched.c                                               # MLQ scheduler
-│   ├── mm.c, mm-vm.c, mm-memphy.c, mm64.c, paging.c, mem.c   # Memory management
-│   ├── libmem.c                                              # alloc/free/read/write (mmvm_lock)
-│   ├── sys_mem.c, syscall.c, sys_listsyscall.c               # System call handlers
-│   ├── syscall.tbl, syscall.lst, syscalltbl.sh               # Syscall table generation
+│   ├── sched.c                                                 # MLQ scheduler
+│   ├── mm.c, mm-vm.c, mm-memphy.c, mm64.c, paging.c, mem.c     # Memory management
+│   ├── libmem.c                                                # alloc/free/read/write (mmvm_lock)
+│   ├── sys_mem.c, syscall.c, sys_listsyscall.c                 # System call handlers
+│   ├── syscall.tbl, syscall.lst, syscalltbl.sh                 # Syscall table generation
 │   └── libstd.c
-├── input/               # Test scenario configs (os_0_mlq_paging, sched_0, ...)
-│   └── proc/            # Sample user programs (m0s, s0, sc1, ...)
-├── output/              # Expected output for each scenario (<name>.output)
+|
+├── input/                  # Test scenario configs
+│   └── proc/               # Sample user programs
+|          
+├── output/                 # Expected output for each scenario
 ├── Makefile
 ├── run.sh
 └── README.md
@@ -65,7 +68,7 @@ The project simulates how an operating system coordinates concurrent processes a
 ## Building & Running
 
 ```bash
-# Build the kernel (produces the `os` binary at the repo root)
+# Build the kernel
 make
 
 # Run a specific test scenario
@@ -84,18 +87,18 @@ diff output/os_sc.output actual.output
 
 ## Test Scenarios
 
-| Test | Focus | CI behavior |
-|---|---|---|
-| `os_sc` | Minimal process lifecycle | **Exact-match** — deterministic, diffed against `output/os_sc.output` |
-| `os_syscall_list` | System call table registration | **Exact-match** — deterministic, diffed against expected output |
-| `os_0_mlq_paging` | MLQ scheduling + paging, 2 CPUs (Gantt-chart verified) | Informational — output uploaded as artifact |
-| `os_1_mlq_paging*` | Page-table operations across concurrent alloc/free/write | Informational |
-| `os_1_singleCPU_mlq*` | Single-CPU scheduling and paging stability | Informational |
-| `os_2_mlq_paging*` | Multi-CPU paging consistency under heavier load | Informational |
-| `os_syscall` | System call + paging interaction | Informational |
-| `sched`, `sched_0`, `sched_1` | Pure scheduling behavior (priority & round-robin) | Informational |
+| Test | Focus |
+|---|---|
+| `os_sc` | Minimal process lifecycle |
+| `os_syscall_list` | System call table registration |
+| `os_0_mlq_paging` | MLQ scheduling + paging, 2 CPUs (Gantt-chart verified) |
+| `os_1_mlq_paging*` | Page-table operations across concurrent alloc/free/write |
+| `os_1_singleCPU_mlq*` | Single-CPU scheduling and paging stability |
+| `os_2_mlq_paging*` | Multi-CPU paging consistency under heavier load |
+| `os_syscall` | System call + paging interaction |
+| `sched`, `sched_0`, `sched_1` | Pure scheduling behavior (priority & round-robin) |
 
-> **Why two groups?** Most scenarios run on multiple simulated CPUs, so exact dispatch timing and memory addresses legitimately differ between runs (see the report's per-test comparison notes). Only `os_sc` and `os_syscall_list` are deterministic enough to diff exactly in CI; the rest are run and their output is kept as a build artifact for manual review instead of failing the pipeline on a non-deterministic mismatch.
+**On CI behavior:** every scenario relies on real sleep/timer ticks to simulate time slots. On a dedicated local machine, `os_sc` and `os_syscall_list` reproduce `output/*.output` exactly, as documented in the report. On shared GitHub-hosted runners, however, tick timing can drift by a slot under CPU contention, so the CI workflow only fails a scenario on an actual crash (non-zero exit) — it prints an informational diff against `output/*.output` and uploads the real output as an artifact for manual comparison, rather than failing the build on timing drift.
 
 Full Gantt-chart diagrams, execution traces, and per-test analysis are documented in the project report.
 
