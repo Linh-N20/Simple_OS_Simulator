@@ -1,0 +1,4 @@
+os
+*.o
+*.out
+*.output.actual
