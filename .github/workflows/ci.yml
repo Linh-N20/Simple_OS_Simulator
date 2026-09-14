@@ -56,10 +56,10 @@ jobs:
         run: make
 
       - name: Run scenario
-        run: ./os "input/${{ matrix.scenario }}" | tee "${{ matrix.scenario }}.output"
+        run: ./os "${{ matrix.scenario }}" | tee "${{ matrix.scenario }}.output"
 
       - name: Diff against expected output
-        run: diff -u "output/${{ matrix.scenario }}.output" "${{ matrix.scenario }}.output"
+        run: diff -u --strip-trailing-cr "output/${{ matrix.scenario }}.output" "${{ matrix.scenario }}.output"
 
       - name: Upload actual output (on failure)
         if: failure()
@@ -73,7 +73,7 @@ jobs:
   # between runs (see report Section 8 comparisons). 
   # We just verify the run completes cleanly and keep the output as an artifact 
   # for manual review, rather than failing the build on a non-deterministic diff.
-
+  
   trace-tests:
     name: Trace tests (non-deterministic, informational)
     runs-on: ubuntu-latest
@@ -107,7 +107,7 @@ jobs:
         run: make
 
       - name: Run scenario
-        run: ./os "input/${{ matrix.scenario }}" | tee "${{ matrix.scenario }}.output"
+        run: ./os "${{ matrix.scenario }}" | tee "${{ matrix.scenario }}.output"
 
       - name: Upload output for manual comparison
         uses: actions/upload-artifact@v4

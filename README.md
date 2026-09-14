@@ -44,19 +44,19 @@ The project simulates how an operating system coordinates concurrent processes a
 
 ```
 .
-├── include/             # Header files
-│
-├── src/             
+├── include/                    # Header files
+│                   
+├── src/                        # Kernel source
 │   ├── os.c, cpu.c, loader.c, timer.c, queue.c
-│   ├── sched.c                
-│   ├── mm.c, mm-vm.c, mm-memphy.c, mm64.c, paging.c, mem.c
-│   ├── libmem.c 
-│   ├── sys_mem.c, syscall.c, sys_listsyscall.c
-│   ├── syscall.tbl, syscall.lst, syscalltbl.sh 
+│   ├── sched.c                                               # MLQ scheduler
+│   ├── mm.c, mm-vm.c, mm-memphy.c, mm64.c, paging.c, mem.c   # Memory management
+│   ├── libmem.c                                              # alloc/free/read/write (mmvm_lock)
+│   ├── sys_mem.c, syscall.c, sys_listsyscall.c               # System call handlers
+│   ├── syscall.tbl, syscall.lst, syscalltbl.sh               # Syscall table generation
 │   └── libstd.c
-├── input/               # Test scenario configs
-│   └── proc/            # Sample user programs
-├── output/              # Expected output for each scenario
+├── input/               # Test scenario configs (os_0_mlq_paging, sched_0, ...)
+│   └── proc/            # Sample user programs (m0s, s0, sc1, ...)
+├── output/              # Expected output for each scenario (<name>.output)
 ├── Makefile
 ├── run.sh
 └── README.md
@@ -69,7 +69,7 @@ The project simulates how an operating system coordinates concurrent processes a
 make
 
 # Run a specific test scenario
-./os input/os_0_mlq_paging
+./os os_0_mlq_paging
 
 # Or use the provided helper script
 ./run.sh
@@ -78,7 +78,7 @@ make
 To check a run against the expected trace:
 
 ```bash
-./os input/os_sc > actual.output
+./os os_sc > actual.output
 diff output/os_sc.output actual.output
 ```
 
